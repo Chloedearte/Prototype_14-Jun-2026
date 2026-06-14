@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Group Exercise Simulation | CIMB-Inspired Playful Digital Learning Prototype</title>
+  <style>
+    :root{
+      --primary:#b5121b;
+      --primary-dark:#870f17;
+      --primary-soft:#ffe5e8;
+      --accent:#ffb000;
+      --teal:#16a3a3;
+      --green:#15803d;
+      --orange:#c2410c;
+      --blue:#1d4ed8;
+      --ink:#1f2937;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --paper:#ffffff;
+      --paper-soft:rgba(255,255,255,0.88);
+      --shadow:0 20px 45px rgba(17,24,39,.12);
+      --radius:24px;
+      --bg1:#fff7f2;
+      --bg2:#fff0f3;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:"Open Sans", Arial, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 15% 10%, rgba(245,158,11,.15), transparent 20%),
+        radial-gradient(circle at 85% 18%, rgba(15,118,110,.12), transparent 22%),
+        linear-gradient(160deg, var(--bg1), #fff 40%, var(--bg2) 100%);
+      min-height:100vh;
+    }
+
+    .app{
+      max-width:1180px;
+      margin:0 auto;
+      padding:24px;
+    }
+
+    .hero{
+      position:relative;
+      overflow:hidden;
+      border-radius:34px;
+      box-shadow:var(--shadow);
+      min-height:320px;
+      color:#fff;
+      background:
+        linear-gradient(180deg, rgba(255,215,140,.12), rgba(255,255,255,0)),
+        linear-gradient(135deg, #c91522 0%, #b5121b 36%, #870f17 100%);
+    }
+
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:url("data:image/svg+xml;utf8,\
+      <svg xmlns='http://www.w3.org/2000/svg' width='1200' height='420' viewBox='0 0 1200 420'>\
+        <defs>\
+          <linearGradient id='g1' x1='0' y1='0' x2='0' y2='1'>\
+            <stop offset='0%' stop-color='rgba(255,220,160,0.55)'/>\
+            <stop offset='100%' stop-color='rgba(255,220,160,0)'/>\
+          </linearGradient>\
+        </defs>\
+        <circle cx='1030' cy='86' r='54' fill='rgba(255,217,102,0.75)'/>\
+        <path d='M0 345 C120 290 210 310 320 335 C440 362 520 355 620 320 C720 284 800 300 920 325 C1030 348 1110 345 1200 312 L1200 420 L0 420 Z' fill='rgba(15,118,110,0.24)'/>\
+        <path d='M0 360 C105 335 200 345 300 362 C425 384 515 380 620 350 C720 323 810 330 920 352 C1025 373 1115 378 1200 362 L1200 420 L0 420 Z' fill='rgba(255,255,255,0.13)'/>\
+        <path d='M0 0 H1200 V420 H0 Z' fill='url(%23g1)' opacity='0.45'/>\
+        <path d='M0 395 C70 385 145 380 215 388 C280 396 340 405 405 392 C470 379 540 376 610 390 C675 403 740 406 806 394 C875 381 942 381 1010 394 C1075 406 1137 404 1200 396' stroke='rgba(255,255,255,0.16)' stroke-width='2' fill='none'/>\
+      </svg>");
+      background-size:cover;
+      background-position:center;
+      opacity:1;
+      pointer-events:none;
+    }
+
+    .hero-pattern{
+      position:absolute;
+      inset:auto 0 0 0;
+      height:72px;
+      background-image:url("data:image/svg+xml;utf8,\
+      <svg xmlns='http://www.w3.org/2000/svg' width='1600' height='72' viewBox='0 0 1600 72'>\
+        <rect width='1600' height='72' fill='rgba(255,255,255,0.03)'/>\
+        <path d='M0 48 Q24 24 48 48 T96 48 T144 48 T192 48 T240 48 T288 48 T336 48 T384 48 T432 48 T480 48 T528 48 T576 48 T624 48 T672 48 T720 48 T768 48 T816 48 T864 48 T912 48 T960 48 T1008 48 T1056 48 T1104 48 T1152 48 T1200 48 T1248 48 T1296 48 T1344 48 T1392 48 T1440 48 T1488 48 T1536 48 T1584 48' stroke='rgba(255,255,255,0.22)' stroke-width='2' fill='none'/>\
+        <path d='M0 60 Q24 36 48 60 T96 60 T144 60 T192 60 T240 60 T288 60 T336 60 T384 60 T432 60 T480 60 T528 60 T576 60 T624 60 T672 60 T720 60 T768 60 T816 60 T864 60 T912 60 T960 60 T1008 60 T1056 60 T1104 60 T1152 60 T1200 60 T1248 60 T1296 60 T1344 60 T1392 60 T1440 60 T1488 60 T1536 60 T1584 60' stroke='rgba(255,230,180,0.18)' stroke-width='2' fill='none'/>\
+      </svg>");
+      opacity:.95;
+      pointer-events:none;
+    }
+
+    .hero-inner{
+      position:relative;
+      z-index:2;
+      padding:34px 34px 100px;
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:28px;
+      align-items:end;
+      min-height:320px;
+    }
+
+    .hero-tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:999px;
+      padding:8px 14px;
+      background:rgba(255,255,255,.15);
+      border:1px solid rgba(255,255,255,.26);
+      font-size:13px;
+      font-weight:700;
+      margin-bottom:18px;
+      backdrop-filter: blur(4px);
+    }
+
+    .hero h1{
+      margin:0;
+      font-size:clamp(30px, 5vw, 52px);
+      line-height:1.05;
+      max-width:730px;
+    }
+
+    .hero p{
+      margin:14px 0 0;
+      max-width:760px;
+      font-size:17px;
+      line-height:1.65;
+      opacity:.96;
+    }
+
+    .hero-actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:22px;
+    }
+
+    .hero-mini{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+      align-self:end;
+    }
+
+    .mini-card{
+      background:rgba(255,255,255,.14);
+      border:1px solid rgba(255,255,255,.22);
+      border-radius:18px;
+      padding:14px 16px;
+      backdrop-filter:blur(8px);
+    }
+
+    .mini-card .label{
+      font-size:12px;
+      opacity:.8;
+      margin-bottom:6px;
+    }
+
+    .mini-card .value{
+      font-size:18px;
+      font-weight:800;
+      line-height:1.2;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:1fr 330px;
+      gap:24px;
+      margin-top:24px;
+    }
+
+    .card{
+      background:var(--paper-soft);
+      border:1px solid rgba(255,255,255,.8);
+      backdrop-filter: blur(8px);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+
+    .main-card{
+      padding:30px;
+      min-height:580px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .main-card::before{
+      content:"";
+      position:absolute;
+      right:-80px;
+      top:-50px;
+      width:260px;
+      height:260px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(179,32,46,.08), transparent 70%);
+      pointer-events:none;
+    }
+
+    .side-card{
+      padding:24px;
+      position:sticky;
+      top:18px;
+      align-self:start;
+      height:fit-content;
+      overflow:hidden;
+    }
+
+    .side-card::after{
+      content:"";
+      position:absolute;
+      right:-10px;
+      bottom:-10px;
+      width:140px;
+      height:140px;
+      background:
+        radial-gradient(circle at center, rgba(15,118,110,.08), transparent 60%);
+      pointer-events:none;
+    }
+
+    .section-label{
+      color:var(--primary);
+      font-weight:800;
+      font-size:13px;
+      letter-spacing:.7px;
+      text-transform:uppercase;
+      margin-bottom:8px;
+    }
+
+    h2{
+      margin:0 0 12px;
+      font-size:30px;
+      line-height:1.2;
+    }
+
+    h3{
+      margin:24px 0 12px;
+      font-size:20px;
+    }
+
+    p, li{
+      line-height:1.65;
+    }
+
+    .highlight-strip{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:14px;
+    }
+
+    .chip{
+      border-radius:999px;
+      background:#fff5f6;
+      color:var(--primary-dark);
+      border:1px solid #ffd8de;
+      padding:8px 12px;
+      font-weight:700;
+      font-size:12px;
+    }
+
+    .scenario-box{
+      background:linear-gradient(135deg, #fff8fb, #fff6ed);
+      border:1px solid #ffe4d8;
+      border-radius:20px;
+      padding:20px;
+      margin:20px 0;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .scenario-box::before{
+      content:"";
+      position:absolute;
+      inset:auto auto -25px -10px;
+      width:120px;
+      height:120px;
+      background:radial-gradient(circle, rgba(245,158,11,.12), transparent 70%);
+      pointer-events:none;
+    }
+
+    .scenario-box strong{
+      color:var(--primary-dark);
+    }
+
+    .progress-wrap{margin-top:8px}
+    .progress-label{
+      display:flex;
+      justify-content:space-between;
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:8px;
+      font-weight:700;
+    }
+
+    .progress-bar,
+    .mini-bar{
+      overflow:hidden;
+      background:#eef2f7;
+      border-radius:999px;
+    }
+
+    .progress-bar{
+      height:12px;
+    }
+
+    .progress{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg, var(--primary), #ef4444, #f59e0b);
+      border-radius:999px;
+      transition:width .35s ease;
+    }
+
+    .option-grid{
+      display:grid;
+      gap:14px;
+      margin-top:20px;
+    }
+
+    .option{
+      width:100%;
+      text-align:left;
+      border:1px solid var(--line);
+      background:#fff;
+      padding:18px 18px 18px 20px;
+      border-radius:18px;
+      cursor:pointer;
+      transition:transform .18s ease, border .18s ease, box-shadow .18s ease, background .18s ease;
+      font-size:15px;
+      color:var(--ink);
+      position:relative;
+    }
+
+    .option::before{
+      content:"";
+      position:absolute;
+      left:0;
+      top:0;
+      bottom:0;
+      width:6px;
+      border-radius:18px 0 0 18px;
+      background:transparent;
+      transition:background .18s ease;
+    }
+
+    .option:hover{
+      transform:translateY(-2px);
+      border-color:rgba(179,32,46,.45);
+      box-shadow:0 12px 24px rgba(179,32,46,.10);
+    }
+
+    .option:hover::before{
+      background:linear-gradient(180deg, var(--primary), var(--accent));
+    }
+
+    .option.selected.good{
+      border-color:var(--green);
+      background:#f0fdf4;
+    }
+    .option.selected.good::before{background:var(--green)}
+
+    .option.selected.okay{
+      border-color:var(--orange);
+      background:#fff7ed;
+    }
+    .option.selected.okay::before{background:var(--orange)}
+
+    .option.selected.weak{
+      border-color:#dc2626;
+      background:#fef2f2;
+    }
+    .option.selected.weak::before{background:#dc2626}
+
+    .option.best-answer{
+      border-color:var(--green);
+      background:#f0fdf4;
+    }
+    .option.best-answer::before{background:var(--green)}
+
+    .option:disabled{
+      cursor:default;
+    }
+
+    .feedback{
+      display:none;
+      margin-top:20px;
+      border-radius:18px;
+      padding:18px;
+      border:1px solid var(--line);
+      background:#fff;
+    }
+
+    .feedback.show{display:block}
+    .feedback-title{font-weight:800;margin-bottom:6px}
+    .feedback-text{margin-bottom:12px}
+    .coach-note{
+      border-top:1px solid var(--line);
+      padding-top:12px;
+      color:#374151;
+      font-size:14px;
+    }
+    .coach-note strong{
+      color:var(--primary-dark);
+    }
+    .feedback.good .feedback-title{color:var(--green)}
+    .feedback.okay .feedback-title{color:var(--orange)}
+    .feedback.weak .feedback-title{color:#dc2626}
+
+    .button-row{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:24px;
+    }
+
+    .btn{
+      border:0;
+      border-radius:999px;
+      padding:13px 20px;
+      font-weight:800;
+      cursor:pointer;
+      font-size:15px;
+      transition:transform .15s ease, opacity .15s ease, background .15s ease;
+    }
+
+    .btn:focus-visible,
+    .option:focus-visible{
+      outline:3px solid rgba(29,78,216,.55);
+      outline-offset:3px;
+    }
+
+    .btn:hover{transform:translateY(-1px)}
+    .btn-primary{
+      background:linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color:white;
+      box-shadow:0 12px 22px rgba(179,32,46,.24);
+    }
+
+    .btn-primary:hover{
+      background:linear-gradient(135deg, #c12434, #86131d);
+    }
+
+    .btn-secondary{
+      background:#f3f4f6;
+      color:var(--ink);
+    }
+
+    .btn:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    .score-list{
+      display:grid;
+      gap:15px;
+      margin-top:18px;
+    }
+
+    .side-status{
+      display:grid;
+      gap:6px;
+      margin:18px 0 4px;
+      padding:14px;
+      border-radius:16px;
+      background:#fff;
+      border:1px solid var(--line);
+      font-size:13px;
+    }
+
+    .side-status strong{
+      color:var(--primary-dark);
+    }
+
+    .score-item{display:grid;gap:7px}
+    .score-top{
+      display:flex;
+      justify-content:space-between;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .mini-bar{height:10px}
+    .mini-fill{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg, var(--primary), #ef4444);
+      border-radius:999px;
+      transition:width .35s ease;
+    }
+
+    .pill-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:18px;
+    }
+
+    .pill{
+      font-size:12px;
+      background:#f7f7fb;
+      padding:8px 10px;
+      border-radius:999px;
+      color:#374151;
+      font-weight:700;
+      border:1px solid #ececf2;
+    }
+
+    .result{display:none}
+    .result.show{display:block}
+
+    .takeaway-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:14px;
+      margin-top:18px;
+    }
+
+    .takeaway{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+    }
+
+    .takeaway strong{
+      color:var(--primary-dark);
+      display:block;
+      margin-bottom:6px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:#fff1f3;
+      color:var(--primary-dark);
+      border-radius:999px;
+      padding:9px 13px;
+      font-weight:800;
+      font-size:13px;
+      margin:8px 0 18px;
+      border:1px solid #ffd9de;
+    }
+
+    .notes{
+      margin-top:24px;
+      padding:18px;
+      border-radius:18px;
+      background:#f9fafb;
+      border:1px dashed #d1d5db;
+      color:#4b5563;
+      font-size:14px;
+    }
+
+    .panel-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:14px;
+      margin-top:18px;
+    }
+
+    .panel{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+    }
+
+    .panel .num{
+      width:34px;height:34px;border-radius:50%;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg, #fff1f3, #fff7ed);
+      color:var(--primary-dark);
+      font-weight:800;
+      margin-bottom:10px;
+    }
+
+    footer{
+      text-align:center;
+      color:var(--muted);
+      font-size:13px;
+      margin:26px 0 6px;
+    }
+
+
+    /* CIMB-inspired playful extras */
+    .hero::after{
+      content:"";
+      position:absolute;
+      right:-70px;
+      top:-70px;
+      width:260px;
+      height:260px;
+      border-radius:42% 58% 52% 48%;
+      background:rgba(255,255,255,.12);
+      transform:rotate(18deg);
+      pointer-events:none;
+    }
+
+    .hero h1::after{
+      content:" ✦";
+      color:#ffcc4d;
+      text-shadow:0 6px 18px rgba(0,0,0,.15);
+    }
+
+    .mini-card{
+      transform:rotate(-1deg);
+    }
+
+    .mini-card:nth-child(even){
+      transform:rotate(1.2deg);
+    }
+
+    .mini-card:hover,
+    .panel:hover,
+    .takeaway:hover{
+      transform:translateY(-3px) rotate(0deg);
+      transition:transform .18s ease, box-shadow .18s ease;
+      box-shadow:0 14px 26px rgba(181,18,27,.14);
+    }
+
+    .panel{
+      position:relative;
+      overflow:hidden;
+    }
+
+    .panel::after{
+      content:"";
+      position:absolute;
+      right:-24px;
+      top:-24px;
+      width:76px;
+      height:76px;
+      border-radius:26px;
+      background:rgba(255,176,0,.12);
+      transform:rotate(25deg);
+    }
+
+    .sticker{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border:2px solid rgba(181,18,27,.18);
+      background:#fff;
+      color:var(--primary-dark);
+      box-shadow:5px 5px 0 rgba(181,18,27,.08);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:12px;
+      font-weight:900;
+      margin:4px 6px 4px 0;
+    }
+
+    .section-label::before{
+      content:"// ";
+      color:var(--accent);
+    }
+
+    .option{
+      box-shadow:0 5px 0 rgba(31,41,55,.04);
+    }
+
+    .option:hover{
+      box-shadow:0 12px 0 rgba(181,18,27,.07), 0 16px 28px rgba(181,18,27,.10);
+    }
+
+    .btn-primary{
+      box-shadow:0 10px 0 rgba(101,12,19,.35), 0 20px 28px rgba(181,18,27,.18);
+    }
+
+    .btn-primary:hover{
+      transform:translateY(-2px);
+      box-shadow:0 12px 0 rgba(101,12,19,.35), 0 22px 30px rgba(181,18,27,.18);
+    }
+
+    .btn-primary:active{
+      transform:translateY(3px);
+      box-shadow:0 5px 0 rgba(101,12,19,.35), 0 12px 20px rgba(181,18,27,.15);
+    }
+
+    .badge{
+      box-shadow:4px 4px 0 rgba(181,18,27,.08);
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      html{scroll-behavior:auto}
+      *, *::before, *::after{
+        transition:none !important;
+        animation:none !important;
+      }
+    }
+
+
+    @media (max-width: 960px){
+      .hero-inner{
+        grid-template-columns:1fr;
+        padding-bottom:94px;
+      }
+      .hero-mini{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+      .layout{
+        grid-template-columns:1fr;
+      }
+      .side-card{position:static}
+      .takeaway-grid,
+      .panel-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width: 640px){
+      .app{padding:16px}
+      .hero{border-radius:26px}
+      .hero-inner{
+        padding:24px 22px 42px;
+        min-height:auto;
+      }
+      .hero-pattern{height:38px}
+      .hero h1{font-size:34px}
+      .hero p{font-size:15px;line-height:1.55}
+      .hero-mini{display:none}
+      .main-card,.side-card{padding:20px}
+      h2{font-size:26px}
+      .panel-grid{gap:10px}
+      .panel p{margin-bottom:0}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="hero">
+      <div class="hero-inner">
+        <div>
+          <div class="hero-tag">Getting Ready for group case challenge</div>
+          <h1>Group Case Challenge Simulation</h1>
+          <p>
+            Practise making sharp decisions in a assessment centre.
+          </p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" onclick="startSimulation()">Start the Sprint</button>
+          </div>
+        </div>
+
+        <div class="hero-mini">
+          <div class="mini-card">
+            <div class="label">Vibe</div>
+            <div class="value">Playful case sprint</div>
+          </div>
+          <div class="mini-card">
+            <div class="label">Mission</div>
+            <div class="value">5 smart moves</div>
+          </div>
+          <div class="mini-card">
+            <div class="label">Focus</div>
+            <div class="value">Speak up, team up</div>
+          </div>
+          <div class="mini-card">
+            <div class="label">Power skills</div>
+            <div class="value">Comms, teamwork, leadership</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-pattern"></div>
+    </section>
+
+    <div class="layout">
+      <main class="card main-card">
+        <div id="intro">
+          <div class="section-label">Scenario-based practice</div>
+          <h2>You are now in a group case challenge</h2>
+          <p>
+            You are joining a virtual assessment centre for a graduate programme. Your group has 40 minutes to recommend a launch strategy for a youth banking app.
+          </p>
+          <div>
+            <span class="sticker">⚡ Fast thinking</span>
+            <span class="sticker">💬 Speak smart</span>
+            <span class="sticker">🤝 Team energy</span>
+            <span class="sticker">🎯 Decision-ready</span>
+          </div>
+
+          <div class="highlight-strip">
+            <span class="chip">Learn by choosing</span>
+          </div>
+
+          <div class="scenario-box">
+            <p><strong>The situation:</strong> Two candidates are speaking a lot, one candidate is very quiet, and the group has not agreed on a structure. The timer is running.</p>
+            <p><strong>Your mission:</strong> Make decisions that help the team move forward while showing positive assessment behaviours.</p>
+          </div>
+
+          <h3>How it works</h3>
+          <div class="panel-grid">
+            <div class="panel">
+              <div class="num">1</div>
+              <strong>Enter the room</strong>
+              <p>Step into a realistic assessment centre group discussion.</p>
+            </div>
+            <div class="panel">
+              <div class="num">2</div>
+              <strong>Pick your move</strong>
+              <p>Select how you would act at each decision point.</p>
+            </div>
+            <div class="panel">
+              <div class="num">3</div>
+              <strong>Get the debrief</strong>
+              <p>Review instant feedback and see your competency profile.</p>
+            </div>
+          </div>
+
+          <div class="notes">
+            <strong>Learning design note:</strong> This prototype is suitable for pre-assessment preparation and can be embedded into an LMS as a self-paced digital activity.
+          </div>
+        </div>
+
+        <div id="quiz" style="display:none;">
+          <div class="section-label" id="questionLabel">Decision Point 1 of 5</div>
+          <h2 id="questionTitle"></h2>
+          <div class="scenario-box" id="questionScenario"></div>
+
+          <div class="option-grid" id="options"></div>
+
+          <div class="feedback" id="feedback" aria-live="polite">
+            <div class="feedback-title" id="feedbackTitle"></div>
+            <div class="feedback-text" id="feedbackText"></div>
+            <div class="coach-note" id="coachNote"></div>
+          </div>
+
+          <div class="button-row">
+            <button class="btn btn-secondary" onclick="restartSimulation()">Restart</button>
+            <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Next</button>
+          </div>
+        </div>
+
+        <div id="result" class="result" aria-live="polite">
+          <div class="section-label">Simulation complete</div>
+          <h2>Your Group Exercise Readiness Summary</h2>
+          <div class="badge" id="finalBadge">Result</div>
+          <p id="resultText"></p>
+
+          <div class="takeaway-grid">
+            <div class="takeaway">
+              <strong>What you did well</strong>
+              <span id="strengthText"></span>
+            </div>
+            <div class="takeaway">
+              <strong>Focus area</strong>
+              <span id="focusText"></span>
+            </div>
+          </div>
+
+          <h3>Your 3 action steps before Assessment Day</h3>
+          <div class="scenario-box">
+            <ol>
+              <li>Practise opening a discussion with a simple structure and time plan.</li>
+              <li>Prepare 3 phrases to invite quieter members into the conversation.</li>
+              <li>Practise summarising a group decision in 30 seconds using: recommendation, reason, risk and next step.</li>
+            </ol>
+          </div>
+
+          <div class="button-row">
+            <button class="btn btn-primary" onclick="restartSimulation()">Try Again</button>
+          </div>
+        </div>
+      </main>
+
+      <aside class="card side-card">
+        <div class="section-label">Your progress</div>
+
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>Completion</span>
+            <span id="progressText">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+          </div>
+        </div>
+
+        <div class="side-status">
+          <div><strong id="statusQuestion">Ready to begin</strong></div>
+          <div id="statusCompetency">Choose responses to build your readiness profile.</div>
+        </div>
+
+        <h3>Competency score</h3>
+        <div class="score-list">
+          <div class="score-item">
+            <div class="score-top"><span>Communication</span><span id="communicationScore">0%</span></div>
+            <div class="mini-bar"><div class="mini-fill" id="communicationBar"></div></div>
+          </div>
+          <div class="score-item">
+            <div class="score-top"><span>Teamwork</span><span id="teamworkScore">0%</span></div>
+            <div class="mini-bar"><div class="mini-fill" id="teamworkBar"></div></div>
+          </div>
+          <div class="score-item">
+            <div class="score-top"><span>Leadership</span><span id="leadershipScore">0%</span></div>
+            <div class="mini-bar"><div class="mini-fill" id="leadershipBar"></div></div>
+          </div>
+          <div class="score-item">
+            <div class="score-top"><span>Time Management</span><span id="timeScore">0%</span></div>
+            <div class="mini-bar"><div class="mini-fill" id="timeBar"></div></div>
+          </div>
+          <div class="score-item">
+            <div class="score-top"><span>Problem Solving</span><span id="problemScore">0%</span></div>
+            <div class="mini-bar"><div class="mini-fill" id="problemBar"></div></div>
+          </div>
+        </div>
+
+        <div class="pill-row">
+          <span class="pill">CIMB-inspired</span>
+          <span class="pill">No-logo design</span>
+          <span class="pill">Gen Z playful</span>
+          <span class="pill">Self-paced sprint</span>
+        </div>
+      </aside>
+    </div>
+
+    <footer>Enhanced prototype with CIMB-inspired playful styling</footer>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        title: "The group has started discussing randomly. What do you do first?",
+        scenario: "Everyone is jumping into ideas, but no one has confirmed the objective or time plan.",
+        competency: "Leadership and time management",
+        options: [
+          {
+            text: "Suggest a quick structure: clarify the objective, agree time allocation, then discuss options.",
+            type: "good",
+            feedback: "Strong choice. This shows leadership, time management and task focus without dominating the group.",
+            points: { communication: 2, teamwork: 1, leadership: 3, time: 3, problem: 2 }
+          },
+          {
+            text: "Start explaining your full solution immediately so the group knows you have ideas.",
+            type: "okay",
+            feedback: "You are contributing, but it may feel too individualistic. In a group exercise, structure and alignment should come before pushing your full solution.",
+            points: { communication: 1, teamwork: 0, leadership: 1, time: 0, problem: 1 }
+          },
+          {
+            text: "Wait quietly because someone else will probably organise the group.",
+            type: "weak",
+            feedback: "This gives assessors very little evidence. You do not need to dominate, but you should contribute constructively early.",
+            points: { communication: 0, teamwork: 0, leadership: 0, time: 0, problem: 0 }
+          }
+        ]
+      },
+      {
+        title: "One candidate is very quiet. What is the best way to include them?",
+        scenario: "Three people have spoken several times. One team member has not said anything yet.",
+        competency: "Inclusive teamwork",
+        options: [
+          {
+            text: "Say: “Mei, we have not heard from you yet. What is your view on this option?”",
+            type: "good",
+            feedback: "Strong choice. Inviting others in shows inclusive teamwork and good group awareness.",
+            points: { communication: 2, teamwork: 3, leadership: 2, time: 1, problem: 1 }
+          },
+          {
+            text: "Ignore it. It is their responsibility to speak if they want to.",
+            type: "weak",
+            feedback: "This misses an opportunity to improve team dynamics. Assessors often notice whether candidates help others contribute.",
+            points: { communication: 0, teamwork: 0, leadership: 0, time: 1, problem: 0 }
+          },
+          {
+            text: "Tell the quiet candidate: “You need to speak more or we will lose marks.”",
+            type: "okay",
+            feedback: "The intention is to involve them, but the tone may create pressure. A supportive invitation works better.",
+            points: { communication: 0, teamwork: 1, leadership: 1, time: 0, problem: 0 }
+          }
+        ]
+      },
+      {
+        title: "Two ideas are competing. How should you respond?",
+        scenario: "Half the group prefers a full launch. The other half prefers a phased launch. The discussion is becoming circular.",
+        competency: "Problem solving",
+        options: [
+          {
+            text: "Propose evaluation criteria: customer impact, risk, speed, cost and long-term scalability.",
+            type: "good",
+            feedback: "Strong choice. Using criteria helps the group move from opinion-based debate to structured decision-making.",
+            points: { communication: 2, teamwork: 2, leadership: 2, time: 2, problem: 3 }
+          },
+          {
+            text: "Push for your preferred idea because the group is running out of time.",
+            type: "okay",
+            feedback: "Making decisions matters, but forcing your preference may reduce collaboration. A criteria-based approach is stronger.",
+            points: { communication: 1, teamwork: 0, leadership: 1, time: 1, problem: 1 }
+          },
+          {
+            text: "Suggest discussing both options until everyone feels comfortable.",
+            type: "weak",
+            feedback: "This sounds inclusive, but it may not help the team converge. In a timed task, the group needs a decision method.",
+            points: { communication: 1, teamwork: 1, leadership: 0, time: 0, problem: 0 }
+          }
+        ]
+      },
+      {
+        title: "The group is running out of time. What do you do?",
+        scenario: "There are only 8 minutes left, and the group has not finalised the recommendation.",
+        competency: "Time management under pressure",
+        options: [
+          {
+            text: "Summarise the current agreement and ask the group to confirm the final recommendation quickly.",
+            type: "good",
+            feedback: "Strong choice. This shows time awareness, clarity and leadership under pressure.",
+            points: { communication: 3, teamwork: 2, leadership: 3, time: 3, problem: 2 }
+          },
+          {
+            text: "Continue discussing details because the recommendation must be perfect.",
+            type: "weak",
+            feedback: "Perfection can hurt performance in a timed assessment. A clear, reasonable recommendation is better than an unfinished discussion.",
+            points: { communication: 0, teamwork: 1, leadership: 0, time: 0, problem: 1 }
+          },
+          {
+            text: "Tell everyone to stop talking and just follow your answer.",
+            type: "okay",
+            feedback: "You are trying to move the group forward, but the tone is too forceful. Better to summarise and seek quick agreement.",
+            points: { communication: 0, teamwork: 0, leadership: 1, time: 2, problem: 1 }
+          }
+        ]
+      },
+      {
+        title: "During Q&A, the assessor challenges your recommendation. What do you do?",
+        scenario: "The assessor asks: “Your idea sounds good, but what is the biggest risk and how would you manage it?”",
+        competency: "Communication and critical thinking",
+        options: [
+          {
+            text: "Acknowledge the risk, explain the mitigation, and connect it back to the group’s recommendation.",
+            type: "good",
+            feedback: "Strong choice. This shows maturity, critical thinking and confidence without being defensive.",
+            points: { communication: 3, teamwork: 1, leadership: 2, time: 1, problem: 3 }
+          },
+          {
+            text: "Defend the idea strongly and say the risk is small.",
+            type: "okay",
+            feedback: "Confidence is useful, but assessors want to see balanced thinking. Acknowledge trade-offs.",
+            points: { communication: 1, teamwork: 0, leadership: 1, time: 0, problem: 1 }
+          },
+          {
+            text: "Say another team member handled that part, so they should answer.",
+            type: "weak",
+            feedback: "It is fine to involve teammates, but completely passing the question away may suggest weak ownership.",
+            points: { communication: 0, teamwork: 1, leadership: 0, time: 0, problem: 0 }
+          }
+        ]
+      }
+    ];
+
+    let current = 0;
+    let selected = null;
+    let scores = {
+      communication: 0,
+      teamwork: 0,
+      leadership: 0,
+      time: 0,
+      problem: 0
+    };
+
+    const maxScore = {
+      communication: 12,
+      teamwork: 9,
+      leadership: 12,
+      time: 10,
+      problem: 11
+    };
+
+    function startSimulation() {
+      document.getElementById("intro").style.display = "none";
+      document.getElementById("quiz").style.display = "block";
+      document.getElementById("result").classList.remove("show");
+      renderQuestion();
+      updateProgress();
+      document.getElementById("quiz").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function renderQuestion() {
+      selected = null;
+      const q = questions[current];
+      document.getElementById("questionLabel").innerText = `Decision Point ${current + 1} of ${questions.length}`;
+      document.getElementById("questionTitle").innerText = q.title;
+      document.getElementById("questionScenario").innerText = q.scenario;
+      document.getElementById("nextBtn").disabled = true;
+      document.getElementById("nextBtn").innerText = current === questions.length - 1 ? "View Results" : "Next";
+      document.getElementById("statusQuestion").innerText = `Decision ${current + 1} of ${questions.length}`;
+      document.getElementById("statusCompetency").innerText = q.competency;
+
+      const feedback = document.getElementById("feedback");
+      feedback.className = "feedback";
+      document.getElementById("feedbackTitle").innerText = "";
+      document.getElementById("feedbackText").innerText = "";
+      document.getElementById("coachNote").innerText = "";
+
+      const options = document.getElementById("options");
+      options.innerHTML = "";
+
+      q.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.className = "option";
+        button.innerText = option.text;
+        button.type = "button";
+        button.onclick = () => selectOption(index);
+        options.appendChild(button);
+      });
+
+      updateProgress();
+    }
+
+    function selectOption(index) {
+      if (selected !== null) return;
+
+      selected = questions[current].options[index];
+      Object.keys(scores).forEach(key => {
+        scores[key] += selected.points[key] || 0;
+      });
+
+      const optionButtons = document.querySelectorAll(".option");
+      optionButtons[index].classList.add("selected", selected.type);
+      optionButtons.forEach(button => button.disabled = true);
+
+      const bestIndex = questions[current].options.findIndex(option => option.type === "good");
+      if (bestIndex >= 0) {
+        optionButtons[bestIndex].classList.add("best-answer");
+      }
+
+      const feedback = document.getElementById("feedback");
+      feedback.className = `feedback show ${selected.type}`;
+
+      const titles = {
+        good: "Strong move",
+        okay: "Almost there",
+        weak: "Try a stronger approach"
+      };
+
+      document.getElementById("feedbackTitle").innerText = titles[selected.type];
+      document.getElementById("feedbackText").innerText = selected.feedback;
+      document.getElementById("coachNote").innerHTML =
+        `<strong>What assessors look for:</strong> ${getCoachNote(questions[current])}`;
+
+      document.getElementById("nextBtn").disabled = false;
+      updateScores();
+      updateProgress();
+    }
+
+    function nextQuestion() {
+      if (current < questions.length - 1) {
+        current++;
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function updateProgress() {
+      const answered = selected ? current + 1 : current;
+      const percent = Math.round((answered / questions.length) * 100);
+      document.getElementById("progress").style.width = percent + "%";
+      document.getElementById("progressText").innerText = percent + "%";
+    }
+
+    function updateScores() {
+      const mapping = [
+        ["communication", "communicationScore", "communicationBar"],
+        ["teamwork", "teamworkScore", "teamworkBar"],
+        ["leadership", "leadershipScore", "leadershipBar"],
+        ["time", "timeScore", "timeBar"],
+        ["problem", "problemScore", "problemBar"]
+      ];
+
+      mapping.forEach(([key, scoreId, barId]) => {
+        const width = Math.min(100, Math.round((scores[key] / maxScore[key]) * 100));
+        document.getElementById(scoreId).innerText = width + "%";
+        document.getElementById(barId).style.width = width + "%";
+      });
+    }
+
+    function showResult() {
+      document.getElementById("quiz").style.display = "none";
+      document.getElementById("result").classList.add("show");
+      document.getElementById("progress").style.width = "100%";
+      document.getElementById("progressText").innerText = "100%";
+
+      const total = Object.values(scores).reduce((sum, value) => sum + value, 0);
+      const maxTotal = Object.values(maxScore).reduce((sum, value) => sum + value, 0);
+      const percentage = Math.round((total / maxTotal) * 100);
+
+      let badge = "";
+      let resultText = "";
+
+      if (percentage >= 75) {
+        badge = `Main character readiness · ${percentage}%`;
+        resultText = "You demonstrated strong group exercise behaviours. You were able to structure the conversation, include others, manage time and respond thoughtfully under pressure.";
+      } else if (percentage >= 50) {
+        badge = `Glow-up in progress · ${percentage}%`;
+        resultText = "You showed some effective behaviours, but there are areas to strengthen. Focus on balancing confidence with collaboration, and practise helping the group move toward a clear decision.";
+      } else {
+        badge = `Practice mode unlocked · ${percentage}%`;
+        resultText = "You may need more practice before assessment day. Focus on contributing early, listening actively, using structure and managing time during group discussions.";
+      }
+
+      document.getElementById("finalBadge").innerText = badge;
+      document.getElementById("resultText").innerText = resultText;
+
+      const normalizedScores = Object.entries(scores).map(([key, value]) => [
+        key,
+        Math.round((value / maxScore[key]) * 100)
+      ]);
+      const strongestEntry = [...normalizedScores].sort((a, b) => b[1] - a[1])[0];
+      const weakestEntry = [...normalizedScores].sort((a, b) => a[1] - b[1])[0];
+      const strongest = strongestEntry[0];
+      const weakest = weakestEntry[0];
+
+      const labels = {
+        communication: "Communication",
+        teamwork: "Teamwork",
+        leadership: "Leadership",
+        time: "Time management",
+        problem: "Problem solving"
+      };
+
+      document.getElementById("strengthText").innerText =
+        `${labels[strongest]} appears to be your strongest area in this simulation at ${strongestEntry[1]}%. Keep using clear, helpful and task-focused behaviours.`;
+
+      if (weakestEntry[1] >= 90) {
+        document.getElementById("focusText").innerText =
+          `Your profile is well balanced. To sharpen further, practise adapting your tone when the group is tense, quiet or running out of time.`;
+      } else {
+        document.getElementById("focusText").innerText =
+          `${labels[weakest]} is your key area to practise at ${weakestEntry[1]}%. Try using simple phrases and frameworks so the behaviour becomes natural during a live assessment.`;
+      }
+
+      document.getElementById("statusQuestion").innerText = "Simulation complete";
+      document.getElementById("statusCompetency").innerText = `Overall readiness: ${percentage}%`;
+      document.getElementById("result").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function getCoachNote(question) {
+      const notes = {
+        "Leadership and time management": "Use light structure early, invite agreement, and help the group spend time where it matters.",
+        "Inclusive teamwork": "Create space for quieter members without putting them on the spot or making the moment feel punitive.",
+        "Problem solving": "Move the group from opinion to criteria so the final recommendation has a clear rationale.",
+        "Time management under pressure": "Summarise what is agreed, close open loops, and help the team land a decision.",
+        "Communication and critical thinking": "Own the recommendation, acknowledge trade-offs, and explain how risk will be managed."
+      };
+
+      return notes[question.competency] || "Make the team more structured, inclusive and decision-ready.";
+    }
+
+    function restartSimulation() {
+      current = 0;
+      selected = null;
+      scores = {
+        communication: 0,
+        teamwork: 0,
+        leadership: 0,
+        time: 0,
+        problem: 0
+      };
+
+      document.getElementById("intro").style.display = "block";
+      document.getElementById("quiz").style.display = "none";
+      document.getElementById("result").classList.remove("show");
+      updateScores();
+      document.getElementById("progress").style.width = "0%";
+      document.getElementById("progressText").innerText = "0%";
+      document.getElementById("statusQuestion").innerText = "Ready to begin";
+      document.getElementById("statusCompetency").innerText = "Choose responses to build your readiness profile.";
+      document.getElementById("intro").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  </script>
+</body>
+</html>

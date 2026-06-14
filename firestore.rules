@@ -1,0 +1,25 @@
+rules_version='2'
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /simulationAttempts/{attemptId} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly([
+        "percentage",
+        "scores",
+        "strongest",
+        "weakest",
+        "completedAt",
+        "createdAt",
+        "userAgent"
+      ])
+      && request.resource.data.percentage is number
+      && request.resource.data.scores is map
+      && request.resource.data.strongest is string
+      && request.resource.data.weakest is string
+      && request.resource.data.completedAt is string
+      && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+  }
+}
